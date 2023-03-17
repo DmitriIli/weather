@@ -35,7 +35,7 @@ function App() {
 
   async function fetchWeather() {
     const responce = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${getCoord[0]}&lon=${getCoord[1]}&appid=${API_KEY}`)
-    console.log(responce.data)
+    console.log(responce.date)
   }
 
 
@@ -51,7 +51,7 @@ function App() {
         onChange={setValue}
       />
       <button onClick={fetchWeather}> get object</button>
-      {value}
+      {}
     </div>
   );
 }

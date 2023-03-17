@@ -1,5 +1,4 @@
 import React from "react";
-import classes from './SelectItem.module.css'
 
 
 
@@ -10,7 +9,7 @@ const SelectItem = ({options, defaultValue, value, onChange}) => {
             <option disabled value="">{defaultValue}</option>
             {options.map(option =>
                 <option key={option.id} item={option} >
-                    {option.subscrib}
+                    {option.title}
                 </option>
             )}
         </select>

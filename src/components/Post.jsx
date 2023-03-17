@@ -1,13 +1,22 @@
 import React from "react";
 
-const Post = ()  => {
+
+const Post = ({ responce, city }) => {
+    console.log(responce)
+
     return (
+
         <div>
             <div className="post__content">
-                прогноз погоды
+                {city
+                    ? < strong > {city}.Погода на сегодня </strong>
+                    : <div></div>
+            
+                }
+
             </div>
 
-        </div>
+        </div >
     )
 }
 

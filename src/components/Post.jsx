@@ -1,6 +1,6 @@
 import React from "react";
 
-const Post = function () {
+const Post = ()  => {
     return (
         <div>
             <div className="post__content">
@@ -10,3 +10,5 @@ const Post = function () {
         </div>
     )
 }
+
+export default Post;

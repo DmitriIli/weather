@@ -1,43 +1,32 @@
 import React, { useMemo, useState } from "react";
-import SelectItem from "./components/UI/select/SelectItem";
 import axios from 'axios';
+import SelectItem from "./components/UI/select/SelectItem";
+import PostList from "./components/PostList";
 
 
 
 function App() {
-  // const API_KEY = `${API_KEY}`
 
   const locations = [{ id: 1, title: 'Москва', lat: '55.44', lon: '37.36' },
   { id: 2, title: 'Санкт-Петербург', lat: '59.56', lon: '30.19' },
   { id: 3, title: 'Екатеринбург', lat: '50.56', lon: '60.35' },]
 
   const [value, setValue] = useState('')
-  // const [data, setDate] = useState('')
 
-  let lat = ''
-  let lon = ''
   const API_KEY = '1ee60e113198511d041b46ab8605b35a'
-
-  console.log('value: ', value)
-
-  // async function fetchWeather(url){
-  //   const responce = await axios.get(url)
-  // }
 
   const getCoord = useMemo(() => {
     if (value) {
-      lat = locations.find(item => item.title === value).lat
-      lon = locations.find(item => item.title === value).lon
-      return [lat, lon]
+      return [locations.find(item => item.title === value).lat, locations.find(item => item.title === value).lon]
     }
     return []
   }, [value])
-
   async function fetchWeather() {
+    console.log(getCoord)
     const responce = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${getCoord[0]}&lon=${getCoord[1]}&appid=${API_KEY}`)
-    console.log(responce.date)
+    console.log(responce.data)
   }
-
+  const posts=[]
 
   return (
 
@@ -50,8 +39,12 @@ function App() {
         value={value}
         onChange={setValue}
       />
-      <button onClick={fetchWeather}> get object</button>
-      {}
+      { value 
+        ?<button onClick={fetchWeather}> get object</button>
+        : <h1 style={{textAlign:'center'}}> выберите город </h1>
+      }
+      
+      <PostList posts={posts} />
     </div>
   );
 }

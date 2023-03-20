@@ -1,73 +1,96 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import SelectItem from "./components/UI/select/SelectItem";
-import PostList from "./components/PostList";
-import Post from './components/Post';
-import ButtonItem from './components/UI/button/ButtonItem';
+import InputItem from './components/UI/input/InputItem';
 import "./styles/App.css";
+import ButtonItem from './components/UI/button/ButtonItem';
 
 
 function App() {
   const API_KEY = '1ee60e113198511d041b46ab8605b35a'
 
-  // const locations = [{ id: 1, title: 'Москва', lat: '55.44', lon: '37.36' },
-  // { id: 2, title: 'Санкт-Петербург', lat: '59.56', lon: '30.19' },
-  // { id: 3, title: 'Екатеринбург', lat: '50.56', lon: '60.35' },]
-
-  const
   const [value, setValue] = useState('')
-  const [responce, setResponce] = useState({ city: '', resp: '' })
+  const [responce, setResponce] = useState({ responce: '', e: '' })
 
 
-  const getCoord = useMemo((e) => {
+  async function fetchOneDay(e) {
 
-    if (value) {
-      return [locations.find(item => item.title === value).lat, locations.find(item => item.title === value).lon]
+    try {
+      e.preventDefault()
+      const responce = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${value},ru&appid=${API_KEY}&units=metric&lang=ru&cnt=1`)
+      setResponce({ responce: responce, e: 'true' })
+
+    } catch (e) {
+      console.log(e)
+      setResponce({ e: '' })
+    }
+  }
+
+  async function fetchFiveDay(e) {
+    try {
+      e.preventDefault()
+      const responce = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${value},ru&appid=${API_KEY}&units=metric&lang=ru`)
+      setResponce({ responce: responce, e: 'true' })
+
+    } catch (e) {
+      console.log(e)
+      setResponce({ e: '' })
+    }
+  }
+
+  function getWeatherList({ responce }) {
+    if (responce) {
+      let list = []
+      for (let i = 0; i < 40;) {
+        if (responce.data.list[i]) {
+          list.push(responce.data.list[i])
+          i = i + 8
+        }
+        else {
+          return list
+        }
+      }
+      return list
+
     }
     return []
-  }, [value])
-
-  async function fetchWeatherOneDay(e) {
-
-    const responce = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${getCoord[0]}&lon=${getCoord[1]}&appid=${API_KEY}&units=metric&lang=ru`)
-
-    setResponce({ city: value, resp: responce.data })
   }
-  async function fetchWeatherFiveDay(e) {
-
-    // const responce = await axios.get(
-    //   `https://api.openweathermap.org/data/2.5/forecast?lat=${getCoord[0]}&lon=${getCoord[1]}&appid=${API_KEY}&units=metric&lang=ru&cnt=3`)
-    const responce = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=Киров,ru&appid=${API_KEY}&units=metric&lang=ru`)
-
-      // setResponce({ city: value, resp: responce.data })
-    console.log(responce.data)
+  if (responce) {
+      console.log(getWeatherList(responce))
   }
-
   return (
     <div className="App">
       <h1 style={{ textAlign: 'center' }}>weather </h1>
-      <hr style={{ margin: '15px 0' }} />
-
-      <SelectItem
-        options={locations}
-        defaultValue='Город'
-        value={value}
-        onChange={setValue}
-
-      />
-      <button onClick={fetchWeatherFiveDay}> on </button>
-
-      {value
-        ? <div className="button_block">
-          {/* <button onClick={fetchWeatherOneDay}> Погода на сегодня </button>
-          <button > Погода на пять дней </button> */}
-          <ButtonItem description='Погода на сегодня' onClick={fetchWeatherOneDay} />
-          <ButtonItem description='Погода на пять дней' onClick={fetchWeatherFiveDay} />
-
+      <form className='app_form'>
+        <div className='app_form_input'>
+          <InputItem
+            value={value}
+            type='text'
+            placeholder='Название города'
+            onChange={e => setValue(e.target.value)} />
         </div>
-        : <h1 style={{ textAlign: 'center' }}> выберите город </h1>
-      }
-      <Post responce={responce} />
+        <div className='app_form_button'>
+          <ButtonItem onClick={fetchOneDay}> Погода на сегодня </ButtonItem>
+          <ButtonItem onClick={fetchFiveDay}> Погода на пять дней </ButtonItem>
+        </div>
+
+        {
+          responce.e
+            ?
+            <div>
+              <<{getWeatherList(responce).map(day =>
+                <div key={day.dt}>
+                  {day.main.temp}
+                </div>>
+              )}>
+            </div>
+            :
+            <div>
+              Введите корректный запрос
+            </div>
+        }
+
+      </form>
+
     </div>
   );
 }
